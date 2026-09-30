@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>오륜미네랄 결제</title>
+<style>
+:root{--navy:#0f2440;--navy2:#18375f;--mint:#2bb6a3;--coral:#db5f48;--gold:#c9a44e;--ink:#1f2733;--muted:#5b6b7d;--line:#e6ecf3;--bg:#eef2f7;--card:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;padding-bottom:96px}
+.top{background:var(--navy);color:#fff;padding:calc(14px + env(safe-area-inset-top,0)) 16px 14px;display:flex;align-items:center;gap:10px}
+.top .seal{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f3927a,#d65a44 72%);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
+.top b{font-size:15px}.top .tag{margin-left:auto;font-size:10px;background:#ffffff22;padding:3px 9px;border-radius:20px;font-weight:700}
+.wrap{max-width:520px;margin:0 auto;padding:14px 14px 0}
+.sec{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(15,36,64,.05)}
+.sec h3{font-size:13px;color:var(--navy);margin-bottom:12px;font-weight:800}
+.prod{display:flex;gap:13px;align-items:center}
+.prod .ph{width:58px;height:58px;border-radius:11px;background:linear-gradient(160deg,var(--navy2),var(--navy));color:#bcd0e6;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;text-align:center;flex:0 0 58px}
+.prod .nm{font-size:14px;color:var(--navy);font-weight:700}.prod .up{font-size:12px;color:var(--muted);margin-top:2px}
+.qty{display:flex;align-items:center;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-left:auto}
+.qty button{width:36px;height:36px;border:none;background:#f1f5fa;font-size:19px;color:var(--navy)}
+.qty input{width:40px;border:none;text-align:center;font-size:15px}
+label{display:block;font-size:12px;font-weight:700;color:var(--navy);margin:0 0 6px}
+.inrow{display:flex;gap:8px}
+input,textarea,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:15px;font-family:inherit;color:var(--ink);background:#fff}
+input:focus,textarea:focus{outline:none;border-color:var(--mint)}
+.apply{flex:0 0 66px;border:none;background:var(--navy);color:#fff;border-radius:10px;font-weight:700;font-size:14px}
+.apply.ok{background:var(--mint)}
+.msg{font-size:11.5px;margin-top:6px}.msg.g{color:#137a6c}.msg.r{color:#c1443a}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#eef7f5;border:1px solid var(--mint);color:#137a6c;font-weight:700;font-size:12px;padding:5px 11px;border-radius:20px}
+.chip .x{cursor:pointer;font-weight:900}
+.mt{margin-top:12px}
+.pay{margin-top:6px}
+.pay .brk{border-top:1px dashed var(--line);margin-top:6px;padding-top:10px}
+.line{display:flex;justify-content:space-between;font-size:13px;color:#33414f;margin:5px 0}
+.line.dc{color:var(--coral);font-weight:700}
+.line.tot{border-top:1px solid var(--line);margin-top:8px;padding-top:10px;font-size:15px}
+.line.tot b{font-size:20px;color:var(--coral)}
+.pm{display:flex;gap:8px;margin-top:4px}
+.pm .opt{flex:1;border:1.5px solid var(--line);border-radius:10px;padding:11px;text-align:center;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer}
+.pm .opt.on{border-color:var(--navy);color:var(--navy);background:#f5f8fc}
+.agree{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--muted)}
+.agree input{width:auto;margin-top:3px}
+.legal{font-size:10.5px;color:#9aa7b5;margin-top:10px;line-height:1.5}
+.barfix{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0));box-shadow:0 -2px 10px rgba(15,36,64,.06)}
+.barfix .in{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.barfix .amt{font-size:12px;color:var(--muted)}.barfix .amt b{display:block;font-size:19px;color:var(--navy)}
+.btn{flex:1;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:800;color:#fff;background:linear-gradient(180deg,#f3927a,var(--coral));box-shadow:0 3px 10px rgba(219,95,72,.3)}
+.btn:disabled{opacity:.5;box-shadow:none}
+.link{background:none;border:none;color:var(--muted);font-size:12px;text-decoration:underline;display:block;margin:2px auto 20px}
+/* overlay */
+.ov{position:fixed;inset:0;background:rgba(15,36,64,.55);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.ov.show{display:flex}
+.sheet{background:#fff;width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0));max-height:92vh;overflow:auto}
+.sheet h2{font-size:16px;color:var(--navy);display:flex;align-items:center;gap:8px}
+.sheet .tag{font-size:10px;background:#fff3ef;color:var(--coral);border:1px solid #f3c9be;padding:2px 8px;border-radius:10px;font-weight:700}
+.closex{margin-left:auto;background:none;border:none;font-size:22px;color:var(--muted)}
+.testcard{background:#f6f9fc;border:1px dashed #c7d5e3;border-radius:10px;padding:10px 12px;font-size:12px;color:var(--muted);margin:12px 0}
+.testcard button{background:var(--navy);color:#fff;border:none;border-radius:7px;padding:5px 10px;font-size:12px;font-weight:700;margin-top:6px}
+.spin{width:34px;height:34px;border:3px solid #e2e8f0;border-top-color:var(--mint);border-radius:50%;animation:sp 0.8s linear infinite;margin:20px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+.done{text-align:center;padding:14px 6px}
+.done .ic{width:60px;height:60px;border-radius:50%;background:#e8f6f3;color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:32px;margin:6px auto 12px}
+.rcpt{background:#f6f9fc;border-radius:10px;padding:12px 14px;text-align:left;font-size:13px;margin-top:12px}
+.rcpt .l{display:flex;justify-content:space-between;margin:4px 0;color:#33414f}
+.rcpt .l b{color:var(--navy)}
+/* admin */
+table{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:8px}
+th,td{border:1px solid var(--line);padding:6px 7px;text-align:right}th{background:var(--navy);color:#fff}th:first-child,td:first-child{text-align:left}
+tr:nth-child(even) td{background:#f6f9fc}
+.ghost{background:#fff;border:1px solid var(--line);color:var(--navy);font-weight:700;border-radius:9px;padding:8px 11px;font-size:12px}
+.subh{font-size:13px;color:var(--navy);font-weight:800;margin:18px 0 6px}
+.cpitem{display:flex;align-items:center;gap:8px;font-size:12px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:6px}
+.cpitem .cd{font-weight:800;color:var(--navy)}.cpitem .off{opacity:.45}
+.cpitem button{margin-left:auto;background:none;border:none;color:var(--coral);font-size:12px;font-weight:700}
+</style></head>
+<body>
+<div class="top"><div class="seal">41</div><b>오륜미네랄 결제</b><span class="tag" id="modebadge">TEST</span></div>
+
+<div class="wrap">
+  <div class="sec">
+    <div class="prod">
+      <div class="ph">MINERAL<br>1L</div>
+      <div><div class="nm" id="pname">오륜미네랄 원액 1L</div><div class="up" id="uprice">165,000원 / 병</div></div>
+      <div class="qty"><button id="mi">–</button><input id="qty" value="1" readonly><button id="pl">+</button></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h3>추천 코드 (인플루언서·파트너샵)</h3>
+    <div class="inrow"><input id="code" placeholder="예: INF-소영-01"><button class="apply" id="codeBtn">적용</button></div>
+    <div class="msg" id="codeMsg"></div>
+  </div>
+
+  <div class="sec">
+    <h3>할인 쿠폰</h3>
+    <div class="inrow"><input id="coupon" placeholder="쿠폰 코드 입력"><button class="apply" id="cpBtn">적용</button></div>
+    <div class="msg" id="cpMsg"></div>
+  </div>
+
+  <div class="sec">
+    <h3>주문·배송 정보</h3>
+    <label>성함</label><input id="name" placeholder="이름">
+    <div class="mt"></div><label>연락처</label><input id="tel" placeholder="010-0000-0000" inputmode="tel">
+    <div class="mt"></div><label>배송지</label><textarea id="addr" rows="2" placeholder="주소"></textarea>
+    <div class="mt"></div><label>요청사항 (선택)</label><input id="memo" placeholder="예: 부재 시 문 앞">
+  </div>
+
+  <div class="sec">
+    <h3>결제 수단</h3>
+    <div class="pm"><div class="opt on" data-pm="카드">신용/체크카드</div><div class="opt" data-pm="계좌이체">계좌이체</div></div>
+    <div class="pay brk">
+      <div class="line"><span>상품금액</span><span id="l_sub">165,000원</span></div>
+      <div class="line dc" id="l_dcrow" style="display:none"><span id="l_dclabel">쿠폰할인</span><span id="l_dc">-0원</span></div>
+      <div class="line"><span>배송비</span><span id="l_ship">무료</span></div>
+      <div class="line tot"><span>최종 결제금액</span><b id="l_tot">165,000원</b></div>
+    </div>
+    <div class="agree mt"><input type="checkbox" id="agree"><label for="agree" style="margin:0;font-weight:400;color:var(--muted)">주문 내용 확인 및 개인정보 수집·이용(주문·배송)에 동의합니다.</label></div>
+    <div class="legal" id="legal"></div>
+  </div>
+  <button class="link" id="admBtn">· 관리자(정산·쿠폰) ·</button>
+</div>
+
+<div class="barfix"><div class="in"><div class="amt">결제금액<b id="bar_amt">165,000원</b></div><button class="btn" id="payBtn" disabled>결제하기</button></div></div>
+
+<!-- 결제 시트 -->
+<div class="ov" id="payOv"><div class="sheet" id="paySheet"></div></div>
+<!-- 완료 -->
+<div class="ov" id="doneOv"><div class="sheet" id="doneSheet"></div></div>
+<!-- 관리자 -->
+<div class="ov" id="admOv"><div class="sheet" id="admSheet"></div></div>
+
+<script>
+/* ================= 운영 설정 (본사) ================= */
+const CONFIG={
+  PRODUCT:"오륜미네랄 바이오 이온 미네랄 원액 1L",
+  PRICE:165000, SHIPPING:0, DEFAULT_COMMISSION:25,
+  COMMISSION_BASE:"sale",          // sale=정가기준 / paid=실결제기준 (쿠폰할인은 본사 부담이면 sale 권장)
+  TEST_MODE:true,                  // true=테스트 결제(승인 시뮬레이션)
+  APPS_SCRIPT_URL:"",              // 구글시트 연동 URL(선택)
+  ADMIN_PIN:"0000",                // ★ 배포 전 변경
+  COMPANY:{name:"(주)○○ (판매관리처)",biz:"000-00-00000",tongsin:"2026-○○-0000호",tel:"000-0000-0000"},
+  PARTNER_CODES:{ "INF-소영-01":"소영 인플루언서", "SHOP-강남-01":"강남 파트너샵" }, // 이름 표시용(선택)
+  COUPONS:[  // 본사 발행 기본 쿠폰
+    {code:"WELCOME10",type:"percent",value:10,minOrder:0,expiry:"2026-12-31",active:true,label:"첫구매 10%"},
+    {code:"MINUS20000",type:"fixed",value:20000,minOrder:150000,expiry:"2026-12-31",active:true,label:"2만원 할인"}
+  ]
+};
+/* =================================================== */
+const OKEY="oryun_orders_v2", CKEY="oryun_coupons_v2";
+const won=n=>Math.round(n).toLocaleString("ko-KR")+"원";
+const q=k=>new URLSearchParams(location.search).get(k);
+const el=id=>document.getElementById(id);
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const allCoupons=()=>[...CONFIG.COUPONS,...load(CKEY,[])];
+
+let qty=1, appliedCode="", appliedCoupon=null, pm="카드";
+
+el("pname").textContent=CONFIG.PRODUCT;
+el("uprice").textContent=won(CONFIG.PRICE)+" / 병";
+el("modebadge").textContent=CONFIG.TEST_MODE?"TEST":"LIVE";
+el("legal").innerHTML=`판매자: ${CONFIG.COMPANY.name} · 사업자 ${CONFIG.COMPANY.biz} · 통신판매 ${CONFIG.COMPANY.tongsin} · ${CONFIG.COMPANY.tel}<br>본 제품은 식품이며 질병의 예방·치료를 위한 것이 아닙니다. 전자상거래법에 따라 청약철회·환불이 가능합니다.`;
+
+function subtotal(){return CONFIG.PRICE*qty;}
+function discount(){
+  if(!appliedCoupon)return 0;
+  const s=subtotal();
+  let d=appliedCoupon.type==="percent"?Math.round(s*appliedCoupon.value/100):appliedCoupon.value;
+  return Math.min(d,s);
+}
+function finalAmt(){return Math.max(0,subtotal()-discount()+CONFIG.SHIPPING);}
+function refresh(){
+  el("l_sub").textContent=won(subtotal());
+  const d=discount();
+  el("l_dcrow").style.display=d>0?"flex":"none";
+  el("l_dc").textContent="-"+won(d);
+  el("l_dclabel").textContent="쿠폰할인"+(appliedCoupon?` (${appliedCoupon.code})`:"");
+  el("l_ship").textContent=CONFIG.SHIPPING>0?won(CONFIG.SHIPPING):"무료";
+  el("l_tot").textContent=won(finalAmt());
+  el("bar_amt").textContent=won(finalAmt());
+}
+el("pl").onclick=()=>{qty++;el("qty").value=qty;refresh();};
+el("mi").onclick=()=>{if(qty>1){qty--;el("qty").value=qty;refresh();}};
+
+/* 추천 코드 */
+function applyCode(){
+  const c=el("code").value.trim();
+  if(!c){appliedCode="";el("codeMsg").textContent="";el("codeBtn").classList.remove("ok");el("codeBtn").textContent="적용";return;}
+  appliedCode=c;
+  const nm=CONFIG.PARTNER_CODES[c];
+  el("codeMsg").className="msg g";
+  el("codeMsg").textContent=nm?`✓ ${nm} 추천 코드가 적용되었습니다.`:"✓ 추천 코드가 적용되었습니다.";
+  el("codeBtn").classList.add("ok");el("codeBtn").textContent="완료";
+}
+el("codeBtn").onclick=applyCode;
+if(q("code")){el("code").value=q("code");applyCode();}
+
+/* 쿠폰 */
+el("cpBtn").onclick=()=>{
+  const c=el("coupon").value.trim().toUpperCase();
+  const m=el("cpMsg");
+  if(!c){appliedCoupon=null;m.textContent="";refresh();return;}
+  const cp=allCoupons().find(x=>x.code.toUpperCase()===c);
+  if(!cp||!cp.active){m.className="msg r";m.textContent="유효하지 않은 쿠폰입니다.";appliedCoupon=null;refresh();return;}
+  if(cp.expiry && new Date(cp.expiry)<new Date(new Date().toDateString())){m.className="msg r";m.textContent="만료된 쿠폰입니다.";appliedCoupon=null;refresh();return;}
+  if(subtotal()<(cp.minOrder||0)){m.className="msg r";m.textContent=`최소 주문금액 ${won(cp.minOrder)} 이상부터 사용 가능합니다.`;appliedCoupon=null;refresh();return;}
+  appliedCoupon=cp;m.className="msg g";
+  m.textContent=`✓ ${cp.label||cp.code} 적용 (${cp.type==="percent"?cp.value+"%":won(cp.value)} 할인)`;
+  el("cpBtn").classList.add("ok");el("cpBtn").textContent="완료";
+  refresh();
+};
+document.querySelectorAll(".pm .opt").forEach(o=>o.onclick=()=>{document.querySelectorAll(".pm .opt").forEach(x=>x.classList.remove("on"));o.classList.add("on");pm=o.dataset.pm;});
+el("agree").onchange=e=>el("payBtn").disabled=!e.target.checked;
+
+/* 결제 시트 열기 */
+el("payBtn").onclick=()=>{
+  const name=el("name").value.trim(),tel=el("tel").value.trim(),addr=el("addr").value.trim();
+  if(!name||!tel||!addr){alert("성함·연락처·배송지를 입력해주세요.");return;}
+  openPay();
+};
+function openPay(){
+  el("paySheet").innerHTML=`
+    <h2>카드 결제 ${CONFIG.TEST_MODE?'<span class="tag">테스트 모드</span>':''}<button class="closex" onclick="closeOv('payOv')">×</button></h2>
+    <div class="line tot" style="border:none;margin-top:6px"><span>결제금액</span><b>${won(finalAmt())}</b></div>
+    <label class="mt">카드번호</label><input id="cno" placeholder="0000 0000 0000 0000" inputmode="numeric" maxlength="19">
+    <div class="inrow mt"><div><label>유효기간</label><input id="cexp" placeholder="MM/YY" maxlength="5"></div><div><label>CVC</label><input id="ccvc" placeholder="000" maxlength="3" inputmode="numeric"></div></div>
+    <div class="inrow mt"><div><label>비밀번호 앞 2자리</label><input id="cpw" placeholder="**" maxlength="2" inputmode="numeric"></div><div><label>생년월일 6자리</label><input id="cbir" placeholder="YYMMDD" maxlength="6" inputmode="numeric"></div></div>
+    ${CONFIG.TEST_MODE?`<div class="testcard">테스트 카드로 바로 결제해볼 수 있어요.<br><button id="fillTest">테스트 카드 자동입력</button> &nbsp;<span style="font-size:11px">실패 테스트: 4000 0000 0000 0002</span></div>`:''}
+    <button class="btn" style="margin-top:8px" id="doPay">${won(finalAmt())} 결제</button>
+    <div id="payStatus"></div>`;
+  el("payOv").classList.add("show");
+  const cno=el("cno");
+  cno.oninput=()=>{cno.value=cno.value.replace(/\D/g,"").slice(0,16).replace(/(.{4})/g,"$1 ").trim();};
+  const exp=el("cexp");exp.oninput=()=>{let v=exp.value.replace(/\D/g,"").slice(0,4);if(v.length>=3)v=v.slice(0,2)+"/"+v.slice(2);exp.value=v;};
+  if(CONFIG.TEST_MODE)el("fillTest").onclick=()=>{cno.value="4242 4242 4242 4242";el("cexp").value="12/29";el("ccvc").value="123";el("cpw").value="00";el("cbir").value="900101";};
+  el("doPay").onclick=processPay;
+}
+window.closeOv=id=>el(id).classList.remove("show");
+
+function processPay(){
+  const num=(el("cno").value||"").replace(/\s/g,"");
+  if(num.length<15){alert("카드번호를 확인해주세요.");return;}
+  if(!el("cexp").value||!el("ccvc").value){alert("유효기간과 CVC를 입력해주세요.");return;}
+  el("paySheet").innerHTML=`<div class="spin"></div><p style="text-align:center;color:var(--muted)">${CONFIG.TEST_MODE?'테스트 승인 요청 중...':'결제 승인 요청 중...'}</p>`;
+  setTimeout(()=>{
+    const fail=num==="4000000000000002";
+    if(fail){
+      el("paySheet").innerHTML=`<div class="done"><div class="ic" style="background:#fdece9;color:var(--coral)">!</div><h2 style="justify-content:center">결제 실패</h2><p style="color:var(--muted);margin-top:8px">카드 승인이 거절되었습니다. (테스트)</p><button class="btn" style="margin-top:14px" onclick="openPay()">다시 시도</button></div>`;
+      return;
+    }
+    // 주문 확정
+    const order={id:"O"+Date.now(),ts:new Date().toISOString(),code:appliedCode||"DIRECT",
+      product:CONFIG.PRODUCT,qty,unit:CONFIG.PRICE,subtotal:subtotal(),
+      coupon:appliedCoupon?appliedCoupon.code:"",discount:discount(),shipping:CONFIG.SHIPPING,
+      paid:finalAmt(),method:pm,card4:num.slice(-4),
+      name:el("name").value.trim(),tel:el("tel").value.trim(),addr:el("addr").value.trim(),
+      memo:el("memo").value.trim(),status:CONFIG.TEST_MODE?"테스트결제":"결제완료"};
+    const arr=load(OKEY,[]);arr.push(order);save(OKEY,arr);
+    if(CONFIG.APPS_SCRIPT_URL){fetch(CONFIG.APPS_SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(order)}).catch(()=>{});}
+    closeOv("payOv");showDone(order);
+  },1100);
+}
+function showDone(o){
+  el("doneSheet").innerHTML=`<div class="done"><div class="ic">✓</div><h2 style="justify-content:center">${CONFIG.TEST_MODE?'테스트 결제 완료':'결제가 완료되었습니다'}</h2>
+    <div class="rcpt">
+      <div class="l"><span>주문번호</span><b>${o.id}</b></div>
+      <div class="l"><span>상품</span><span>${o.product} × ${o.qty}</span></div>
+      <div class="l"><span>상품금액</span><span>${won(o.subtotal)}</span></div>
+      ${o.discount>0?`<div class="l" style="color:var(--coral)"><span>쿠폰(${o.coupon})</span><span>-${won(o.discount)}</span></div>`:""}
+      <div class="l"><span>결제금액</span><b>${won(o.paid)}</b></div>
+      <div class="l"><span>결제수단</span><span>${o.method} ****${o.card4}</span></div>
+      ${o.code!=="DIRECT"?`<div class="l"><span>추천코드</span><span>${o.code}</span></div>`:""}
+    </div>
+    <button class="btn" style="margin-top:14px" onclick="location.href=location.pathname+location.search">새 주문</button></div>`;
+  el("doneOv").classList.add("show");
+}
+
+/* ===== 관리자: 정산 + 쿠폰 발행 ===== */
+el("admBtn").onclick=()=>{const p=prompt("관리자 PIN");if(p===null)return;if(p!==CONFIG.ADMIN_PIN){alert("PIN 오류");return;}openAdmin();};
+function openAdmin(){renderAdmin();el("admOv").classList.add("show");}
+function renderAdmin(){
+  let rate=CONFIG.DEFAULT_COMMISSION;
+  const draw=()=>{
+    const orders=load(OKEY,[]).filter(o=>o.status!=="취소");
+    const g={};orders.forEach(o=>{const c=o.code||"DIRECT";(g[c]=g[c]||{cnt:0,sale:0,dc:0,paid:0});g[c].cnt++;g[c].sale+=o.subtotal||0;g[c].dc+=o.discount||0;g[c].paid+=o.paid||0;});
+    const rows=Object.entries(g).map(([c,v])=>{const base=CONFIG.COMMISSION_BASE==="paid"?v.paid:v.sale;const fee=Math.round(base*rate/100);const wh=Math.round(fee*0.033);return{c,...v,fee,wh,pay:fee-wh};}).sort((a,b)=>b.sale-a.sale);
+    const T=rows.reduce((s,r)=>({cnt:s.cnt+r.cnt,sale:s.sale+r.sale,dc:s.dc+r.dc,paid:s.paid+r.paid,fee:s.fee+r.fee,wh:s.wh+r.wh,pay:s.pay+r.pay}),{cnt:0,sale:0,dc:0,paid:0,fee:0,wh:0,pay:0});
+    const cps=allCoupons();
+    el("admSheet").innerHTML=`
+      <h2>관리자 <span class="tag" style="background:#eef7f5;color:#137a6c;border-color:#a9ddd4">정산·쿠폰</span><button class="closex" onclick="closeOv('admOv')">×</button></h2>
+      <div class="subh">코드별 정산</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><span class="msg">수수료율</span><input id="rate" type="number" value="${rate}" style="width:64px;padding:6px"> <span class="msg">% · 기준: ${CONFIG.COMMISSION_BASE==="paid"?"실결제":"정가"}</span><button class="ghost" id="csv" style="margin-left:auto">CSV</button></div>
+      <div style="overflow:auto"><table>
+        <tr><th>코드</th><th>건</th><th>정가매출</th><th>쿠폰할인</th><th>실결제</th><th>수수료</th><th>원천3.3%</th><th>실지급</th></tr>
+        ${rows.map(r=>`<tr><td>${r.c==="DIRECT"?"직접":r.c}</td><td>${r.cnt}</td><td>${won(r.sale)}</td><td>-${won(r.dc)}</td><td>${won(r.paid)}</td><td>${won(r.fee)}</td><td>${won(r.wh)}</td><td><b>${won(r.pay)}</b></td></tr>`).join("")}
+        <tr><th>합계</th><th>${T.cnt}</th><th>${won(T.sale)}</th><th>-${won(T.dc)}</th><th>${won(T.paid)}</th><th>${won(T.fee)}</th><th>${won(T.wh)}</th><th>${won(T.pay)}</th></tr>
+      </table></div>
+      <div class="subh">쿠폰 발행 (본사)</div>
+      <div class="inrow"><input id="ncode" placeholder="쿠폰코드 (예: EVENT5000)"><select id="ntype" style="flex:0 0 96px"><option value="fixed">정액(원)</option><option value="percent">정률(%)</option></select></div>
+      <div class="inrow mt"><input id="nval" placeholder="할인값" inputmode="numeric"><input id="nmin" placeholder="최소주문(원)" inputmode="numeric"><input id="nexp" placeholder="만료 YYYY-MM-DD" style="flex:0 0 130px"></div>
+      <button class="ghost mt" id="addcp" style="width:100%">쿠폰 발행</button>
+      <div class="mt">${cps.map((c,i)=>`<div class="cpitem ${c.active?'':'off'}"><span class="cd">${c.code}</span><span>${c.type==="percent"?c.value+"%":won(c.value)}${c.minOrder?" · 최소 "+won(c.minOrder):""}${c.expiry?" · ~"+c.expiry:""}</span>${i>=CONFIG.COUPONS.length?`<button data-i="${i-CONFIG.COUPONS.length}" class="delcp">삭제</button>`:'<button disabled style="color:#bbb">기본</button>'}</div>`).join("")}</div>
+      <p class="msg mt">· 발행한 쿠폰코드를 소비자에게 전달 → 결제 시 입력하면 할인 적용됩니다.<br>· 데모는 이 브라우저에 저장됩니다. 실운영은 구글시트/DB 연동 권장.</p>`;
+    el("rate").oninput=e=>{rate=Number(e.target.value)||0;draw();};
+    el("csv").onclick=()=>{const h="코드,건수,정가매출,쿠폰할인,실결제,수수료,원천3.3%,실지급\n";const b=rows.map(r=>[r.c,r.cnt,r.sale,r.dc,r.paid,r.fee,r.wh,r.pay].join(",")).join("\n");const bl=new Blob(["\ufeff"+h+b],{type:"text/csv"});const a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download="정산_"+new Date().toISOString().slice(0,10)+".csv";a.click();};
+    el("addcp").onclick=()=>{const code=el("ncode").value.trim().toUpperCase();const val=Number(el("nval").value)||0;if(!code||!val){alert("코드와 할인값을 입력하세요.");return;}const list=load(CKEY,[]);list.push({code,type:el("ntype").value,value:val,minOrder:Number(el("nmin").value)||0,expiry:el("nexp").value.trim(),active:true,label:code});save(CKEY,list);draw();};
+    document.querySelectorAll(".delcp").forEach(b=>b.onclick=()=>{const list=load(CKEY,[]);list.splice(Number(b.dataset.i),1);save(CKEY,list);draw();});
+  };
+  draw();
+}
+refresh();
+if(q("view")==="admin"){el("admBtn").click();}
+</script>
+</body></html>
